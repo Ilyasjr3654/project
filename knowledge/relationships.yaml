@@ -1,0 +1,18 @@
+documents:
+  - name: clients_commandes
+    left: clients.client_id
+    right: commandes.client_id
+    cardinality: Un client possède plusieurs commandes.
+    tables: [clients, commandes]
+
+  - name: commandes_lignes
+    left: commandes.commande_id
+    right: lignes_commandes.commande_id
+    cardinality: Une commande possède plusieurs lignes de commande.
+    tables: [commandes, lignes_commandes]
+
+  - name: produits_lignes
+    left: produits.produit_id
+    right: lignes_commandes.produit_id
+    cardinality: Un produit peut apparaître dans plusieurs lignes de commande.
+    tables: [produits, lignes_commandes]

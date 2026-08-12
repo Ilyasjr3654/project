@@ -1,0 +1,210 @@
+cases:
+  - question: Quel est le chiffre d'affaires total ?
+    reference_sql: |
+      SELECT ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires_total
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée';
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price]
+    expected_documents: [chiffre_affaires, validated_orders_default, revenue_uses_transaction_price]
+    expected_presentation: kpi
+
+  - question: Quel est le chiffre d'affaires par région ?
+    reference_sql: |
+      SELECT cl.region, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients cl JOIN commandes c ON cl.client_id = c.client_id
+      JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' GROUP BY cl.region ORDER BY chiffre_affaires DESC;
+    expected_tables: [clients, commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, geographic_dimension]
+    expected_documents: [chiffre_affaires_par_region, geographic_dimension, clients_commandes]
+    expected_presentation: bar
+
+  - question: Quels sont les 5 meilleurs clients ?
+    reference_sql: |
+      SELECT cl.nom_client, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients cl JOIN commandes c ON cl.client_id = c.client_id
+      JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' GROUP BY cl.client_id, cl.nom_client
+      ORDER BY chiffre_affaires DESC LIMIT 5;
+    expected_tables: [clients, commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price]
+    expected_documents: [top_clients, meilleur_client]
+    expected_presentation: bar
+
+  - question: Quels sont les produits les plus vendus ?
+    reference_sql: |
+      SELECT p.nom_produit, SUM(l.quantite) AS quantite_totale
+      FROM produits p JOIN lignes_commandes l ON p.produit_id = l.produit_id
+      JOIN commandes c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée' GROUP BY p.produit_id, p.nom_produit
+      ORDER BY quantite_totale DESC LIMIT 10;
+    expected_tables: [produits, lignes_commandes, commandes]
+    expected_rules: [validated_orders_default]
+    expected_documents: [top_produits, produits_lignes]
+    expected_presentation: bar
+
+  - question: Quel est le chiffre d'affaires par catégorie ?
+    reference_sql: |
+      SELECT p.categorie, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM produits p JOIN lignes_commandes l ON p.produit_id = l.produit_id
+      JOIN commandes c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée' GROUP BY p.categorie ORDER BY chiffre_affaires DESC;
+    expected_tables: [produits, lignes_commandes, commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price]
+    expected_documents: [chiffre_affaires, categorie]
+    expected_presentation: bar
+
+  - question: Montre-moi l'évolution mensuelle des ventes.
+    reference_sql: |
+      SELECT strftime('%Y-%m', c.date_commande) AS mois,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' GROUP BY mois ORDER BY mois;
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, temporal_dimension]
+    expected_documents: [evolution_mensuelle, temporal_dimension]
+    expected_presentation: line
+
+  - question: Compare les ventes de 2025 et 2026.
+    reference_sql: |
+      SELECT strftime('%Y', c.date_commande) AS annee,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' AND strftime('%Y', c.date_commande) IN ('2025', '2026')
+      GROUP BY annee ORDER BY annee;
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, temporal_dimension]
+    expected_documents: [comparaison_annuelle, temporal_dimension]
+    expected_presentation: bar
+
+  - question: Combien de commandes ont été annulées ?
+    reference_sql: |
+      SELECT COUNT(*) AS nombre_commandes_annulees FROM commandes WHERE statut = 'annulée';
+    expected_tables: [commandes]
+    expected_rules: [cancelled_orders_excluded]
+    expected_documents: [commandes_annulees, cancelled_orders_excluded]
+    expected_presentation: kpi
+
+  - question: Quel est le panier moyen ?
+    reference_sql: |
+      SELECT ROUND(SUM(l.quantite * l.prix_unitaire) / COUNT(DISTINCT c.commande_id), 2) AS panier_moyen
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée';
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price]
+    expected_documents: [panier_moyen]
+    expected_presentation: kpi
+
+  - question: Quel est le chiffre d'affaires de Casablanca ?
+    reference_sql: |
+      SELECT cl.ville, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients cl JOIN commandes c ON cl.client_id = c.client_id
+      JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' AND cl.ville = 'Casablanca' GROUP BY cl.ville;
+    expected_tables: [clients, commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, geographic_dimension]
+    expected_documents: [geographie, geographic_dimension]
+    expected_presentation: kpi
+
+  - question: Combien de commandes validées avons-nous ?
+    reference_sql: |
+      SELECT COUNT(DISTINCT commande_id) AS nombre_commandes FROM commandes WHERE statut = 'validée';
+    expected_tables: [commandes]
+    expected_rules: [validated_orders_default]
+    expected_documents: [nombre_commandes, validated_orders_default]
+    expected_presentation: kpi
+
+  - question: Quel volume total de produits a été vendu ?
+    reference_sql: |
+      SELECT SUM(l.quantite) AS volume_vendu FROM lignes_commandes l
+      JOIN commandes c ON l.commande_id = c.commande_id WHERE c.statut = 'validée';
+    expected_tables: [lignes_commandes, commandes]
+    expected_rules: [validated_orders_default]
+    expected_documents: [volume_vendu]
+    expected_presentation: kpi
+
+  - question: Affiche le chiffre d'affaires par ville.
+    reference_sql: |
+      SELECT cl.ville, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients cl JOIN commandes c ON cl.client_id = c.client_id
+      JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' GROUP BY cl.ville ORDER BY chiffre_affaires DESC;
+    expected_tables: [clients, commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, geographic_dimension]
+    expected_documents: [geographie, geographic_dimension]
+    expected_presentation: bar
+
+  - question: Quelle est l'évolution annuelle du chiffre d'affaires ?
+    reference_sql: |
+      SELECT strftime('%Y', c.date_commande) AS annee,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' GROUP BY annee ORDER BY annee;
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, temporal_dimension]
+    expected_documents: [evolution, temporal_dimension]
+    expected_presentation: line
+
+  - question: Quels sont les 3 produits qui génèrent le plus de chiffre d'affaires ?
+    reference_sql: |
+      SELECT p.nom_produit, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM produits p JOIN lignes_commandes l ON p.produit_id = l.produit_id
+      JOIN commandes c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée' GROUP BY p.produit_id, p.nom_produit
+      ORDER BY chiffre_affaires DESC LIMIT 3;
+    expected_tables: [produits, lignes_commandes, commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price]
+    expected_documents: [top_produits, chiffre_affaires]
+    expected_presentation: bar
+
+  - question: Liste les commandes en attente avec leur date.
+    reference_sql: |
+      SELECT commande_id, date_commande, client_id FROM commandes
+      WHERE statut = 'en attente' ORDER BY date_commande DESC LIMIT 100;
+    expected_tables: [commandes]
+    expected_rules: []
+    expected_documents: [commandes]
+    expected_presentation: table
+
+  - question: Quelle quantité a été vendue par catégorie ?
+    reference_sql: |
+      SELECT p.categorie, SUM(l.quantite) AS quantite_totale
+      FROM produits p JOIN lignes_commandes l ON p.produit_id = l.produit_id
+      JOIN commandes c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée' GROUP BY p.categorie ORDER BY quantite_totale DESC;
+    expected_tables: [produits, lignes_commandes, commandes]
+    expected_rules: [validated_orders_default]
+    expected_documents: [volume_vendu, categorie]
+    expected_presentation: bar
+
+  - question: Liste les clients situés à Rabat.
+    reference_sql: |
+      SELECT client_id, nom_client, ville, region FROM clients
+      WHERE ville = 'Rabat' ORDER BY nom_client LIMIT 100;
+    expected_tables: [clients]
+    expected_rules: []
+    expected_documents: [clients, geographie]
+    expected_presentation: table
+
+  - question: Quel chiffre d'affaires avons-nous réalisé en 2026 ?
+    reference_sql: |
+      SELECT ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires_2026
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' AND strftime('%Y', c.date_commande) = '2026';
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, temporal_dimension]
+    expected_documents: [chiffre_affaires, temporal_dimension]
+    expected_presentation: kpi
+
+  - question: Affiche les ventes mensuelles uniquement pour 2025.
+    reference_sql: |
+      SELECT strftime('%Y-%m', c.date_commande) AS mois,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes c JOIN lignes_commandes l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' AND strftime('%Y', c.date_commande) = '2025'
+      GROUP BY mois ORDER BY mois;
+    expected_tables: [commandes, lignes_commandes]
+    expected_rules: [validated_orders_default, revenue_uses_transaction_price, temporal_dimension]
+    expected_documents: [evolution_mensuelle, temporal_dimension]
+    expected_presentation: line

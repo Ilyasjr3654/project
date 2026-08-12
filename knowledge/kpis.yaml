@@ -1,0 +1,56 @@
+documents:
+  - name: chiffre_affaires
+    label: Chiffre d'affaires
+    definition: Somme des quantités multipliées par les prix unitaires réellement facturés.
+    calculation: "SUM(lignes_commandes.quantite * lignes_commandes.prix_unitaire)"
+    tables: [commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: nombre_commandes
+    label: Nombre de commandes
+    definition: Nombre de commandes distinctes correspondant au statut demandé.
+    calculation: "COUNT(DISTINCT commandes.commande_id)"
+    tables: [commandes]
+    default_filter: "commandes.statut = 'validée' pour un KPI de vente"
+
+  - name: volume_vendu
+    label: Volume vendu
+    definition: Quantité totale de produits appartenant aux commandes validées.
+    calculation: "SUM(lignes_commandes.quantite)"
+    tables: [commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: panier_moyen
+    label: Panier moyen
+    definition: Chiffre d'affaires validé divisé par le nombre de commandes validées distinctes.
+    calculation: "SUM(quantite * prix_unitaire) / COUNT(DISTINCT commandes.commande_id)"
+    tables: [commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: top_clients
+    label: Top clients
+    definition: Classement des clients par chiffre d'affaires validé décroissant.
+    calculation: "SUM(lignes_commandes.quantite * lignes_commandes.prix_unitaire) par client"
+    tables: [clients, commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: top_produits
+    label: Top produits
+    definition: Classement des produits par quantité totale vendue décroissante.
+    calculation: "SUM(lignes_commandes.quantite) par produit"
+    tables: [produits, lignes_commandes, commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: chiffre_affaires_par_region
+    label: Chiffre d'affaires par région
+    definition: Chiffre d'affaires validé regroupé par clients.region.
+    calculation: "SUM(quantite * prix_unitaire) GROUP BY clients.region"
+    tables: [clients, commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"
+
+  - name: evolution_mensuelle
+    label: Évolution mensuelle
+    definition: Chiffre d'affaires validé regroupé chronologiquement par mois de commande.
+    calculation: "SQLite strftime('%Y-%m', commandes.date_commande)"
+    tables: [commandes, lignes_commandes]
+    default_filter: "commandes.statut = 'validée'"

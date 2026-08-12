@@ -1,0 +1,33 @@
+documents:
+  - name: chiffre_affaires
+    terms: [CA, chiffre d'affaires, ventes]
+    meaning: Chiffre d'affaires calculé sur les commandes validées.
+    tables: [commandes, lignes_commandes]
+  - name: meilleur_client
+    terms: [meilleur client, meilleurs clients, top clients]
+    meaning: Clients classés par chiffre d'affaires décroissant.
+    tables: [clients, commandes, lignes_commandes]
+  - name: top_produits
+    terms: [top produits, produits les plus vendus, meilleures ventes]
+    meaning: Produits classés par somme des quantités vendues.
+    tables: [produits, lignes_commandes, commandes]
+  - name: geographie
+    terms: [région, ville, Casablanca]
+    meaning: Dimensions clients.region et clients.ville.
+    tables: [clients]
+  - name: categorie
+    terms: [catégorie, gamme, famille de produits]
+    meaning: Dimension produits.categorie.
+    tables: [produits]
+  - name: evolution
+    terms: [évolution, tendance, mensuel, par mois, annuel]
+    meaning: Analyse temporelle basée sur commandes.date_commande.
+    tables: [commandes]
+  - name: panier_moyen
+    terms: [panier moyen, commande moyenne, ticket moyen]
+    meaning: Chiffre d'affaires divisé par le nombre de commandes validées distinctes.
+    tables: [commandes, lignes_commandes]
+  - name: commandes_annulees
+    terms: [commandes annulées, annulations, statut annulé]
+    meaning: Commandes filtrées avec commandes.statut = 'annulée', hors ventes.
+    tables: [commandes]

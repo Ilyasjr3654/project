@@ -1,0 +1,524 @@
+:root {
+    --canvas: #f4f7f5;
+    --surface: #ffffff;
+    --surface-soft: #eef3f0;
+    --ink: #16211b;
+    --muted: #66726c;
+    --line: #dce5df;
+    --accent: #0b6b4f;
+    --accent-hover: #095c44;
+    --accent-soft: #e7f4ee;
+    --blue: #3157a4;
+    --amber: #b66a15;
+    --danger: #b42318;
+    --sidebar: #18211d;
+    --sidebar-soft: #222e28;
+}
+
+* {
+    letter-spacing: 0 !important;
+}
+
+html,
+body,
+[class*="css"] {
+    font-family: "Segoe UI", Inter, Arial, sans-serif;
+}
+
+[data-testid="stAppViewContainer"] {
+    background: var(--canvas);
+    color: var(--ink);
+}
+
+[data-testid="stHeader"] {
+    background: rgba(244, 247, 245, 0.96);
+}
+
+#MainMenu,
+footer {
+    visibility: hidden;
+}
+
+.block-container {
+    width: min(100%, 1280px);
+    padding-top: 2rem;
+    padding-bottom: 7rem;
+}
+
+h1,
+h2,
+h3,
+p {
+    color: var(--ink);
+}
+
+.workspace-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.workspace-kicker {
+    margin: 0 0 0.4rem;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 750;
+    text-transform: uppercase;
+}
+
+.workspace-header h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 2rem;
+    line-height: 1.15;
+    font-weight: 720;
+}
+
+.workspace-subtitle {
+    margin: 0.55rem 0 0;
+    color: var(--muted);
+    font-size: 0.96rem;
+}
+
+.workspace-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 190px;
+    padding-top: 0.35rem;
+}
+
+.workspace-status div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+}
+
+.workspace-status strong {
+    color: var(--ink);
+    font-size: 0.84rem;
+    font-weight: 650;
+}
+
+.workspace-status span:last-child {
+    color: var(--muted);
+    font-size: 0.74rem;
+}
+
+.connection-dot,
+.status-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    flex: 0 0 9px;
+    border-radius: 50%;
+    background: #18a874;
+    box-shadow: 0 0 0 4px rgba(24, 168, 116, 0.12);
+}
+
+.empty-state {
+    min-height: 38vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem 5rem;
+    text-align: center;
+}
+
+.empty-mark {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1.25rem;
+    border: 1px solid #a8cbbb;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+.empty-state h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 680;
+}
+
+.empty-state p {
+    max-width: 480px;
+    margin: 0.65rem 0 0;
+    color: var(--muted);
+    font-size: 0.94rem;
+}
+
+[data-testid="stSidebar"] {
+    width: 320px !important;
+    background: var(--sidebar);
+    border-right: 1px solid #2e3a34;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    width: 320px !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    padding: 1.35rem 1.1rem 1rem;
+}
+
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] span {
+    color: #e9efeb;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0.15rem 0 1.75rem;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 7px;
+    background: #f1f7f4;
+    color: var(--accent);
+    font-size: 1rem;
+    font-weight: 850;
+}
+
+.brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.brand-copy strong {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 720;
+}
+
+.brand-copy span {
+    color: #9fb0a7 !important;
+    font-size: 0.72rem;
+}
+
+.sidebar-section {
+    margin: 1.3rem 0 0.55rem !important;
+    color: #92a39a !important;
+    font-size: 0.7rem !important;
+    font-weight: 750 !important;
+    text-transform: uppercase;
+}
+
+[data-testid="stSidebar"] [data-testid="stSegmentedControl"] {
+    margin-bottom: 0.75rem;
+}
+
+[data-testid="stSidebar"] [data-testid="stSegmentedControl"] > div {
+    width: 100%;
+    padding: 3px;
+    border: 1px solid #35443c;
+    border-radius: 7px;
+    background: #111815;
+}
+
+[data-testid="stSidebar"] [data-testid="stSegmentedControl"] button {
+    min-height: 36px;
+    flex: 1;
+    border-radius: 5px;
+    color: #aebbb4;
+    font-size: 0.82rem;
+}
+
+[data-testid="stSidebar"] [data-testid="stSegmentedControl"] button[aria-pressed="true"] {
+    background: #edf5f1;
+    color: var(--accent);
+    box-shadow: none;
+}
+
+.engine-status {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 58px;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid #35443c;
+    border-radius: 7px;
+    background: var(--sidebar-soft);
+}
+
+.engine-status div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.engine-status strong {
+    color: #f2f6f4;
+    font-size: 0.78rem;
+    font-weight: 650;
+}
+
+.engine-status div span {
+    overflow: hidden;
+    color: #9fb0a7 !important;
+    font-size: 0.7rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.engine-status.is-warning .status-dot {
+    background: #f1a94b;
+    box-shadow: 0 0 0 4px rgba(241, 169, 75, 0.12);
+}
+
+[data-testid="stSidebar"] .stButton > button {
+    min-height: 40px;
+    justify-content: flex-start;
+    border-color: transparent;
+    border-radius: 6px;
+    color: #d9e2dd;
+    background: transparent;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+[data-testid="stSidebar"] .stButton > button:hover:not(:disabled) {
+    border-color: #35443c;
+    background: #25322c;
+    color: #ffffff;
+}
+
+[data-testid="stSidebar"] .stButton > button:focus:not(:active) {
+    border-color: #5a7668;
+    color: #ffffff;
+}
+
+[data-testid="stSidebar"] .stButton > button[kind="secondary"] {
+    justify-content: center;
+    border-color: #405149;
+    background: #26332d;
+}
+
+[data-testid="stSidebar"] .stButton > button:disabled {
+    color: #708078;
+    opacity: 0.7;
+}
+
+[data-testid="stSidebar"] [data-testid="stToggle"] {
+    margin: 1.15rem 0 0.7rem;
+}
+
+.sidebar-spacer {
+    height: 0.35rem;
+}
+
+.sidebar-footer {
+    margin: 1rem 0 0 !important;
+    color: #71827a !important;
+    font-size: 0.68rem !important;
+    text-align: center;
+}
+
+[data-testid="stChatMessage"] {
+    width: 100%;
+    margin-bottom: 0.85rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
+    margin-left: auto;
+    border-color: #cfe2d8;
+    background: #edf6f1;
+}
+
+[data-testid="stChatMessageAvatarUser"],
+[data-testid="stChatMessageAvatarAssistant"] {
+    border-radius: 7px;
+}
+
+[data-testid="stChatMessageAvatarUser"] {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+[data-testid="stChatMessageAvatarAssistant"] {
+    background: #e8edf8;
+    color: var(--blue);
+}
+
+.response-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+}
+
+.response-meta span {
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 650;
+    text-transform: uppercase;
+}
+
+.response-meta span + span::before {
+    content: "";
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    margin: 0 0.65rem 0.15rem 0;
+    border-radius: 50%;
+    background: #9eaba4;
+}
+
+[data-testid="stMetric"] {
+    min-height: 92px;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fbfcfb;
+}
+
+[data-testid="stMetricLabel"] p {
+    color: var(--muted);
+    font-size: 0.76rem;
+    font-weight: 550;
+}
+
+[data-testid="stMetricValue"] {
+    color: var(--ink);
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+[data-testid="stExpander"] {
+    margin-top: 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fbfcfb;
+    overflow: hidden;
+}
+
+[data-testid="stExpander"] summary {
+    min-height: 46px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+    min-height: 39px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 620;
+}
+
+.stDownloadButton > button {
+    border-color: #b8d2c6;
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.stDownloadButton > button:hover {
+    border-color: var(--accent);
+    color: var(--accent-hover);
+    background: #ddf0e7;
+}
+
+[data-testid="stChatInput"] {
+    border: 1px solid #c5d3cb;
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 8px 30px rgba(25, 48, 36, 0.1);
+}
+
+[data-testid="stChatInput"]:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(11, 107, 79, 0.1), 0 8px 30px rgba(25, 48, 36, 0.1);
+}
+
+[data-testid="stChatInput"] textarea {
+    min-height: 52px;
+    color: var(--ink);
+    font-size: 0.92rem;
+}
+
+[data-testid="stChatInputSubmitButton"] {
+    color: var(--accent);
+}
+
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+[data-testid="stPlotlyChart"] {
+    padding: 0.25rem 0;
+}
+
+[data-testid="stAlert"] {
+    border-radius: 7px;
+}
+
+@media (max-width: 900px) {
+    .block-container {
+        padding-top: 1.25rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .workspace-header {
+        gap: 1.25rem;
+    }
+
+    .workspace-header h1 {
+        font-size: 1.7rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .workspace-header {
+        flex-direction: column;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1.15rem;
+    }
+
+    .workspace-status {
+        min-width: 0;
+    }
+
+    .empty-state {
+        min-height: 34vh;
+        padding: 2rem 0.5rem 4rem;
+    }
+
+    [data-testid="stChatMessage"] {
+        padding: 0.85rem;
+    }
+
+    [data-testid="stMetric"] {
+        min-height: 82px;
+        padding: 0.7rem;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1.05rem;
+    }
+}

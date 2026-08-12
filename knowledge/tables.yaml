@@ -1,0 +1,56 @@
+documents:
+  - name: clients
+    role: Stocke les informations d'identification et de localisation des clients.
+    granularity: Une ligne par client.
+    primary_key: client_id
+    foreign_keys: []
+    columns:
+      - {name: client_id, type: INTEGER, description: Identifiant unique du client}
+      - {name: nom_client, type: TEXT, description: Nom commercial du client}
+      - {name: ville, type: TEXT, description: Ville du client}
+      - {name: region, type: TEXT, description: Région commerciale du client}
+    examples:
+      - "1 | Atlas Distribution | Casablanca | Casablanca-Settat"
+
+  - name: produits
+    role: Stocke le catalogue des produits.
+    granularity: Une ligne par produit.
+    primary_key: produit_id
+    foreign_keys: []
+    columns:
+      - {name: produit_id, type: INTEGER, description: Identifiant unique du produit}
+      - {name: nom_produit, type: TEXT, description: Nom du produit}
+      - {name: categorie, type: TEXT, description: Catégorie commerciale du produit}
+      - {name: prix, type: REAL, description: Prix catalogue, à ne pas utiliser pour le chiffre d'affaires}
+    examples:
+      - "1 | Ordinateur portable | Informatique | 7500.00"
+
+  - name: commandes
+    role: Stocke les commandes passées par les clients.
+    granularity: Une ligne par commande.
+    primary_key: commande_id
+    foreign_keys:
+      - "client_id -> clients.client_id"
+    columns:
+      - {name: commande_id, type: INTEGER, description: Identifiant unique de la commande}
+      - {name: client_id, type: INTEGER, description: Client ayant passé la commande}
+      - {name: date_commande, type: DATE, description: Date utilisée pour toutes les analyses temporelles}
+      - {name: statut, type: TEXT, description: "Statut parmi validée, annulée et en attente"}
+    examples:
+      - "1 | 4 | 2025-03-14 | validée"
+
+  - name: lignes_commandes
+    role: Stocke les produits, quantités et prix réellement appliqués dans chaque commande.
+    granularity: Une ligne par produit présent dans une commande.
+    primary_key: ligne_id
+    foreign_keys:
+      - "commande_id -> commandes.commande_id"
+      - "produit_id -> produits.produit_id"
+    columns:
+      - {name: ligne_id, type: INTEGER, description: Identifiant unique de la ligne}
+      - {name: commande_id, type: INTEGER, description: Commande parente}
+      - {name: produit_id, type: INTEGER, description: Produit vendu}
+      - {name: quantite, type: INTEGER, description: Quantité commandée}
+      - {name: prix_unitaire, type: REAL, description: Prix appliqué dans la commande et utilisé pour le chiffre d'affaires}
+    examples:
+      - "1 | 1 | 3 | 2 | 2250.00"

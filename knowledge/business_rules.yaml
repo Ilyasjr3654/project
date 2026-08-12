@@ -1,0 +1,35 @@
+documents:
+  - name: validated_orders_default
+    rule: "Pour le chiffre d'affaires et tous les KPI de vente, filtrer commandes.statut = 'validée' par défaut."
+    tables: [commandes]
+    applies_to: [chiffre_affaires, ventes, panier_moyen, top_clients, top_produits]
+
+  - name: cancelled_orders_excluded
+    rule: "Les commandes annulées sont exclues des ventes, sauf si la question demande explicitement les commandes annulées."
+    tables: [commandes]
+    applies_to: [ventes, commandes_annulees]
+
+  - name: pending_orders_excluded
+    rule: "Les commandes en attente ne participent jamais au chiffre d'affaires validé."
+    tables: [commandes]
+    applies_to: [chiffre_affaires, ventes]
+
+  - name: revenue_uses_transaction_price
+    rule: "Le chiffre d'affaires se calcule avec SUM(lignes_commandes.quantite * lignes_commandes.prix_unitaire)."
+    tables: [lignes_commandes]
+    applies_to: [chiffre_affaires, ventes, panier_moyen]
+
+  - name: catalog_price_not_revenue
+    rule: "produits.prix est le prix catalogue; il ne doit pas servir au calcul du chiffre d'affaires."
+    tables: [produits, lignes_commandes]
+    applies_to: [chiffre_affaires]
+
+  - name: temporal_dimension
+    rule: "Toutes les analyses temporelles utilisent commandes.date_commande."
+    tables: [commandes]
+    applies_to: [evolution_mensuelle, comparaison_annuelle]
+
+  - name: geographic_dimension
+    rule: "Les analyses géographiques utilisent clients.ville ou clients.region."
+    tables: [clients]
+    applies_to: [chiffre_affaires_par_region, chiffre_affaires_par_ville]

@@ -1,0 +1,125 @@
+documents:
+  - name: chiffre_affaires_total
+    question: Quel est le chiffre d'affaires total ?
+    intent: Calculer un KPI agrégé unique.
+    tables: [commandes, lignes_commandes]
+    sql: |
+      SELECT ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires_total
+      FROM commandes AS c
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée';
+
+  - name: chiffre_affaires_region
+    question: Quel est le chiffre d'affaires par région ?
+    intent: Comparer le chiffre d'affaires validé par région.
+    tables: [clients, commandes, lignes_commandes]
+    sql: |
+      SELECT cl.region, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients AS cl
+      JOIN commandes AS c ON cl.client_id = c.client_id
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée'
+      GROUP BY cl.region
+      ORDER BY chiffre_affaires DESC;
+
+  - name: top_clients
+    question: Quels sont les 5 meilleurs clients ?
+    intent: Classer les clients par chiffre d'affaires validé.
+    tables: [clients, commandes, lignes_commandes]
+    sql: |
+      SELECT cl.nom_client, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients AS cl
+      JOIN commandes AS c ON cl.client_id = c.client_id
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée'
+      GROUP BY cl.client_id, cl.nom_client
+      ORDER BY chiffre_affaires DESC
+      LIMIT 5;
+
+  - name: top_produits
+    question: Quels sont les produits les plus vendus ?
+    intent: Classer les produits par quantité validée.
+    tables: [produits, lignes_commandes, commandes]
+    sql: |
+      SELECT p.nom_produit, SUM(l.quantite) AS quantite_totale
+      FROM produits AS p
+      JOIN lignes_commandes AS l ON p.produit_id = l.produit_id
+      JOIN commandes AS c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée'
+      GROUP BY p.produit_id, p.nom_produit
+      ORDER BY quantite_totale DESC
+      LIMIT 10;
+
+  - name: chiffre_affaires_categorie
+    question: Quel est le chiffre d'affaires par catégorie ?
+    intent: Comparer le chiffre d'affaires validé par catégorie.
+    tables: [produits, lignes_commandes, commandes]
+    sql: |
+      SELECT p.categorie, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM produits AS p
+      JOIN lignes_commandes AS l ON p.produit_id = l.produit_id
+      JOIN commandes AS c ON l.commande_id = c.commande_id
+      WHERE c.statut = 'validée'
+      GROUP BY p.categorie
+      ORDER BY chiffre_affaires DESC;
+
+  - name: evolution_mensuelle
+    question: Montre-moi l'évolution mensuelle des ventes.
+    intent: Suivre chronologiquement le chiffre d'affaires par mois.
+    tables: [commandes, lignes_commandes]
+    sql: |
+      SELECT strftime('%Y-%m', c.date_commande) AS mois,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes AS c
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée'
+      GROUP BY mois
+      ORDER BY mois;
+
+  - name: comparaison_annuelle
+    question: Compare les ventes de 2025 et 2026.
+    intent: Comparer le chiffre d'affaires de deux années.
+    tables: [commandes, lignes_commandes]
+    sql: |
+      SELECT strftime('%Y', c.date_commande) AS annee,
+             ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM commandes AS c
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée'
+        AND strftime('%Y', c.date_commande) IN ('2025', '2026')
+      GROUP BY annee
+      ORDER BY annee;
+
+  - name: commandes_annulees
+    question: Combien de commandes ont été annulées ?
+    intent: Compter explicitement les commandes annulées sans les traiter comme des ventes.
+    tables: [commandes]
+    sql: |
+      SELECT COUNT(*) AS nombre_commandes_annulees
+      FROM commandes
+      WHERE statut = 'annulée';
+
+  - name: panier_moyen
+    question: Quel est le panier moyen ?
+    intent: Calculer le montant moyen par commande validée.
+    tables: [commandes, lignes_commandes]
+    sql: |
+      SELECT ROUND(
+          SUM(l.quantite * l.prix_unitaire) / COUNT(DISTINCT c.commande_id),
+          2
+      ) AS panier_moyen
+      FROM commandes AS c
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée';
+
+  - name: chiffre_affaires_casablanca
+    question: Quel est le chiffre d'affaires de Casablanca ?
+    intent: Calculer le chiffre d'affaires validé pour une ville.
+    tables: [clients, commandes, lignes_commandes]
+    sql: |
+      SELECT cl.ville, ROUND(SUM(l.quantite * l.prix_unitaire), 2) AS chiffre_affaires
+      FROM clients AS cl
+      JOIN commandes AS c ON cl.client_id = c.client_id
+      JOIN lignes_commandes AS l ON c.commande_id = l.commande_id
+      WHERE c.statut = 'validée' AND cl.ville = 'Casablanca'
+      GROUP BY cl.ville;
